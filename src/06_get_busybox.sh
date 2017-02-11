@@ -23,7 +23,7 @@ cd source
 if [ ! "$USE_LOCAL_SOURCE" = "true" ] ; then
   # Downloading BusyBox source bundle file. The '-c' option allows the download to resume.
   echo "Downloading BusyBox source bundle from $DOWNLOAD_URL"
-  wget -c $DOWNLOAD_URL
+  curl  -L  $DOWNLOAD_URL -o ${ARCHIVE_FILE}.down && mv ${ARCHIVE_FILE}{.down,} 
 else
   echo "Using local BusyBox source bundle $SRC_DIR/source/$ARCHIVE_FILE"
 fi

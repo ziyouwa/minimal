@@ -95,7 +95,7 @@ fi
 echo "Building kernel..."
 make \
   CFLAGS="$CFLAGS" \
-  bzImage -j $NUM_JOBS
+   -j $NUM_JOBS
 
 # Install the kernel file.
 cp arch/x86/boot/bzImage \
@@ -107,6 +107,11 @@ echo "Generating kernel headers..."
 make \
   INSTALL_HDR_PATH=$SRC_DIR/work/kernel/kernel_installed \
   headers_install -j $NUM_JOBS
+
+echo "Installing kernel modules..."
+make \
+  INSTALL_MOD_PATH=$SRC_DIR/work/kernel/kernel_installed  \
+  modules_install -j $NUM_JOBS
 
 cd $SRC_DIR
 
