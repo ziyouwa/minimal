@@ -10,8 +10,8 @@ GLIBC_PREPARED=$(pwd)/work/glibc/glibc_prepared
 # Remember the BusyBox install folder.
 BUSYBOX_INSTALLED=$(pwd)/work/busybox/busybox_installed
 
-# Remember the Eudev install folder.
-EUDEV_INSTALLED=$(pwd)/work/eudev/eudev_installed
+# Remember the Udev install folder.
+UDEV_INSTALLED=$(pwd)/work/udev/udev_installed
 
 KERNEL_INSTALLED=$(pwd)/work/kernel/kernel_installed
 
@@ -66,8 +66,8 @@ cp $GLIBC_PREPARED/lib/libc.so.6 lib
 cp $GLIBC_PREPARED/lib/libresolv.so.2 lib
 cp $GLIBC_PREPARED/lib/libnss_dns.so.2 lib
 
-# Copy all eudev files to rootfs
-cp -r $EUDEV_INSTALLED/*  .
+# Copy all Udev files to rootfs
+cp -r $UDEV_INSTALLED/*  .
 
 # Copy all necessary 'glibc' libraries to '/lib' END.
 

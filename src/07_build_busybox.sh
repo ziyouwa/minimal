@@ -49,6 +49,7 @@ else
   # main pointer to the kernel headers (see 05_prepare_glibc.sh) and some headers are
   # not resolved. The easiest solution is to ignore this particular applet. 
   sed -i "s/.*CONFIG_INETD.*/CONFIG_INETD=n/" .config
+  sed -i "s/.*CONFIG_MODPROBE_SMALL.*/CONFIG_MODPROBE_SMALL=n/" .config
 fi
 
 # This variable holds the full path to the glibc installation area as quoted string.
@@ -56,7 +57,7 @@ fi
 GLIBC_PREPARED_ESCAPED=$(echo \"$GLIBC_PREPARED\" | sed 's/\//\\\//g')
 
 # Now we tell BusyBox to use the glibc prepared area.
-sed -i "s/.*CONFIG_SYSROOT.*/CONFIG_SYSROOT=$GLIBC_PREPARED_ESCAPED/" .config
+#sed -i "s/.*CONFIG_SYSROOT.*/CONFIG_SYSROOT=$GLIBC_PREPARED_ESCAPED/" .config
 
 # Read the 'CFLAGS' property from '.config'
 CFLAGS="$(grep -i ^CFLAGS .config | cut -f2 -d'=')"
