@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -xe 
+
 echo "*** BUILD UDEV BEGIN ***"
 
 SRC_DIR=$(pwd)
@@ -26,24 +28,25 @@ cd work/udev
 # Change to the source directory ls finds, e.g. 'udev-1.24.2'.
 cd $(ls -d udev-*)
 
-# Remove previously generated artifacts.
-LIBRARY_PATH=$GLIBC_PREPARED/lib make distclean
-
 # Config
 LIBRARY_PATH=$GLIBC_PREPARED/lib  ./configure \
-	--prefix=$UDEV_PREPARED \
-	--exec-prefix=$UDEV_PREPARED \
-	--libexecdir=$UDEV_PREPARED/lib/udev \
-	--with-systemdsystemunitdir=$UDEV_PREPARED \
+	--prefix=/ \
+	--exec-prefix=/ \
+	--libexecdir=/lib/udev \
 	--disable-gtk-doc-html \
+	--disable-manpages \
 	--disable-hwdb \
 	--disable-gudev \
 	--disable-introspection \
 	--disable-mtd_probe \
 	--disable-keymap \
+	--disable-kmod \
+	--disable-blkid \
 	--disable-logging \
-	--enable-rule_generator  #\
-	CC="gcc -m32" LD="ld -m32"
+	CC="gcc $COMPILE_OPTS" CXX="g++ $COMPILE_OPTS"
+
+# Remove previously generated artifacts.
+LIBRARY_PATH=$GLIBC_PREPARED/lib make clean
 	
 # Compile udev with optimization for "parallel jobs" = "number of processors".
 echo "Building Udev..."
@@ -53,16 +56,13 @@ LIBRARY_PATH=$GLIBC_PREPARED/lib make \
 
 # Create the symlinks for udev. The file 'udev.links' is used for this.
 echo "Preparing install files..."
-LIBRARY_PATH=$GLIBC_PREPARED/lib make  install  
+LIBRARY_PATH=$GLIBC_PREPARED/lib make  install  DESTDIR=$UDEV_PREPARED
 cp udev/udevd $UDEV_PREPARED/sbin/
 
 # Delete unused file and directory
 cd $UDEV_PREPARED
 cp -f lib/udev/rules.d/* etc/udev/rules.d/
-rm -rf include share lib basic* sockets* *.socket *.service
-#cd sbin
-#rm -f udevadm
-#ln -s ../bin/udevadm .
+rm -rf include share lib usr
 
 cd $SRC_DIR
 

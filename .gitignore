@@ -9,6 +9,7 @@
 /src/minimal_linux_live*
 /src/*.img
 /src/rootfs*
+/src/15_scpto140.sh
 
 /docs/mdbook
 /docs/book/**

@@ -15,6 +15,9 @@ echo "*** GENERATE ISO BEGIN ***"
 
 SRC_DIR=$(pwd)
 
+#Grab everything from config file
+source $SRC_DIR/.config
+
 # Save the kernel installation directory.
 KERNEL_INSTALLED=$SRC_DIR/work/kernel/kernel_installed
 
@@ -36,9 +39,6 @@ rm -rf work/isoimage
 mkdir work/isoimage
 echo "Prepared new ISO image work area."
 
-# Read the 'COPY_SOURCE_ISO' property from '.config'
-COPY_SOURCE_ISO="$(grep -i ^COPY_SOURCE_ISO .config | cut -f2 -d'=')"
-
 if [ "$COPY_SOURCE_ISO" = "true" ] ; then
   # Copy all prepared source files and folders to '/src'. Note that the scripts
   # will not work there because you also need proper toolchain.
@@ -47,9 +47,6 @@ if [ "$COPY_SOURCE_ISO" = "true" ] ; then
 else
   echo "Source files and folders have been skipped."
 fi
-
-# Read the 'OVERLAY_BUNDLES' property from '.config'
-OVERLAY_BUNDLES="$(grep -i ^OVERLAY_BUNDLES .config | cut -f2 -d'=')"
 
 if [ ! "$OVERLAY_BUNDLES" = "" ] ; then
   echo "Generating additional overlay bundles. This may take a while..."
@@ -67,9 +64,6 @@ cp $KERNEL_INSTALLED/kernel ./kernel.xz
 
 # Now we copy the root file system.
 cp ../rootfs.cpio.xz ./rootfs.xz
-
-# Read the 'OVERLAY_TYPE' property from '.config'
-OVERLAY_TYPE="$(grep -i ^OVERLAY_TYPE $SRC_DIR/.config | cut -f2 -d'=')"
 
 if [ "$OVERLAY_TYPE" = "sparse" -a "$(id -u)" = "0" ] ; then
   # Use sparse file as storage place. The above check guarantees that the whole
@@ -144,7 +138,7 @@ echo Minimal Linux Live is starting...
 CEOF
 
 # Now we generate the ISO image file.
-genisoimage \
+$GENERATE_ISO_CMD \
   -J \
   -r \
   -o ../minimal_linux_live.iso \

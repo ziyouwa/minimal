@@ -21,7 +21,7 @@ clean:
 	@cd minimal_overlay/rootfs && rm -rf $(shell ls -d */) && cd ..
 	@echo "Removing build log file..."
 	@rm -f minimal_linux_live.log
-	@$(eval USE_LOCAL_SOURCE := $(shell grep -i ^USE_LOCAL_SOURCE .config | cut -f2 -d'='))
+	@$(eval USE_LOCAL_SOURCE := $(shell source `pwd`/.config && echo $USE_LOCAL_SOURCE))
 	@if [ "$(USE_LOCAL_SOURCE)" = "false" ]; then echo "Removing source files..."; rm -rf source; fi
 
 qemu:

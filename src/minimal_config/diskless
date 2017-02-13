@@ -1,0 +1,36 @@
+#build glibc in minimal linux or not 
+BUILD_GLIBC=true
+
+#build 32bit diskless linux
+SYSTEM_64=false
+
+#32bit kernel
+KERNEL_MAKE='make ARCH=i386 '
+
+#To 32bit system compile.
+
+COMPILE_OPTS='-m32'
+
+GLIBC_OPTS="--host=i486-linux-gnu --build=i486-linux-gnu" 
+
+KERNEL_SOURCE_URL=http://mirrors.aliyun.com/linux-kernel/v4.x/linux-4.4.48.tar.xz
+
+GLIBC_SOURCE_URL=http://mirrors.ustc.edu.cn/gnu/glibc/glibc-2.25.tar.xz
+
+#udev
+UDEV_SOURCE_URL=http://mirrors.ustc.edu.cn/kernel.org/linux/utils/kernel/hotplug//udev-175.tar.xz
+
+#custom config
+USE_PREDEFINED_KERNEL_CONFIG=true
+USE_PREDEFINED_BUSYBOX_CONFIG=true
+USE_LOCAL_SOURCE=true
+COPY_SOURCE_ROOTFS=false
+COPY_SOURCE_ISO=false
+USE_BOOT_LOGO=false
+
+JOB_FACTOR=2
+
+INITRD_COMPRESS_CMD='xz -9 --check=none'
+
+DEPLOY_SCRIPT=15_scpto140.sh
+

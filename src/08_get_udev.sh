@@ -18,9 +18,11 @@ fi
 cd source
 
 if [ ! "$USE_LOCAL_SOURCE" = "true" ] ; then
-  # Downloading Eudev source bundle file. The '-c' option allows the download to resume.
+  # Delete object file.
+  rm -f ${ARCHIVE_FILE}
+  # Downloading Eudev source bundle file.
   echo "Downloading Eudev source bundle from $DOWNLOAD_URL"
-  wget -c $UDEV_SOURCE_URL
+  curl -L $UDEV_SOURCE_URL -o ${ARCHIVE_FILE}.down && mv ${ARCHIVE_FILE}{.down,} 
 else
   echo "Using local Eudev source bundle $SRC_DIR/source/$ARCHIVE_FILE"
 fi
@@ -32,7 +34,7 @@ mkdir ../work/udev
 
 # Extract udev to folder 'udev'.
 # Full path will be something like 'work/udev/udev-3.2.1'.
-tar -xvf $ARCHIVE_FILE -C ../work/udev
+tar -xf $ARCHIVE_FILE -C ../work/udev
 
 # Change to the source directory ls finds, e.g. 'udev-1.24.2'.
 cd ../work/udev

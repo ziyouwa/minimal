@@ -4,6 +4,9 @@ echo "*** PACK ROOTFS BEGIN ***"
 
 SRC_DIR=$(pwd)
 
+#Grab everything from config file
+source $SRC_DIR/.config
+
 cd work
 
 echo "Packing initramfs. This may take a while..."
@@ -14,7 +17,7 @@ rm -f rootfs.cpio.gz
 cd rootfs
 
 # Packs the current 'initramfs' folder structure in 'cpio.xz' archive.
-find . | cpio -R root:root -H newc -o | xz -9  --check=none > ../rootfs.cpio.xz
+find . | cpio -R root:root -H newc -o | $INITRD_COMPRESS_CMD > ../rootfs.cpio.xz
 
 echo "Packing of initramfs has finished."
 

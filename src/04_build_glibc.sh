@@ -1,20 +1,13 @@
 #!/bin/sh
 
+set -xe
+
 echo "*** BUILD GLIBC BEGIN ***"
 
 SRC_DIR=$(pwd)
 
-# Read the 'JOB_FACTOR' property from '.config'
-JOB_FACTOR="$(grep -i ^JOB_FACTOR .config | cut -f2 -d'=')"
-
-# Read the 'CFLAGS' property from '.config'
-CFLAGS="$(grep -i ^CFLAGS .config | cut -f2 -d'=')"
-
-# Find the number of available CPU cores.
-NUM_CORES=$(grep ^processor /proc/cpuinfo | wc -l)
-
-# Calculate the number of 'make' jobs to be used later.
-NUM_JOBS=$((NUM_CORES * JOB_FACTOR))
+#Grab everything from config file
+source $SRC_DIR/.config
 
 # Save the kernel installation directory.
 KERNEL_INSTALLED=$SRC_DIR/work/kernel/kernel_installed
@@ -46,14 +39,15 @@ cd glibc_objects
 # to be in '/lib64'. Kernel headers are taken from our already prepared kernel
 # header area (see xx_build_kernel.sh). Packages 'gd' and 'selinux' are disabled
 # for better build compatibility with the host system.
-echo "Configuring glibc..."
+echo "Configuring glibc...$GLIBC_OPTS"
 $GLIBC_SRC/configure \
   --prefix= \
   --with-headers=$KERNEL_INSTALLED/include \
   --without-gd \
   --without-selinux \
   --disable-werror \
-  CFLAGS="$CFLAGS"
+  CFLAGS="$CFLAGS" $GLIBC_OPTS \
+  CC="gcc $COMPILE_OPTS" CXX="g++ $COMPILE_OPTS"
 
 # Compile glibc with optimization for "parallel jobs" = "number of processors".
 echo "Building glibc..."

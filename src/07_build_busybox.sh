@@ -4,14 +4,8 @@ echo "*** BUILD BUSYBOX BEGIN ***"
 
 SRC_DIR=$(pwd)
 
-# Read the 'JOB_FACTOR' property from '.config'
-JOB_FACTOR="$(grep -i ^JOB_FACTOR .config | cut -f2 -d'=')"
-
-# Find the number of available CPU cores.
-NUM_CORES=$(grep ^processor /proc/cpuinfo | wc -l)
-
-# Calculate the number of 'make' jobs to be used later.
-NUM_JOBS=$((NUM_CORES * JOB_FACTOR))
+#Grab everything from config file
+source $SRC_DIR/.config
 
 # Remember the glibc installation area.
 GLIBC_PREPARED=$(pwd)/work/glibc/glibc_prepared
@@ -27,9 +21,6 @@ cd $(ls -d busybox-*)
 # Remove previously generated artifacts.
 echo "Preparing BusyBox work area. This may take a while..."
 make distclean -j $NUM_JOBS
-
-# Read the 'USE_PREDEFINED_BUSYBOX_CONFIG' property from '.config'
-USE_PREDEFINED_BUSYBOX_CONFIG="$(grep -i ^USE_PREDEFINED_BUSYBOX_CONFIG $SRC_DIR/.config | cut -f2 -d'=')"
 
 if [ "$USE_PREDEFINED_BUSYBOX_CONFIG" = "true" -a ! -f $SRC_DIR/minimal_config/busybox.config ] ; then
   echo "Config file $SRC_DIR/minimal_config/busybox.config does not exist."
@@ -49,16 +40,25 @@ else
   # main pointer to the kernel headers (see 05_prepare_glibc.sh) and some headers are
   # not resolved. The easiest solution is to ignore this particular applet. 
   sed -i "s/.*CONFIG_INETD.*/CONFIG_INETD=n/" .config
-  sed -i "s/.*CONFIG_MODPROBE_SMALL.*/CONFIG_MODPROBE_SMALL=n/" .config
 fi
 
-# This variable holds the full path to the glibc installation area as quoted string.
-# All back slashes are escaped (/ => \/) in order to keep the 'sed' command stable.
-GLIBC_PREPARED_ESCAPED=$(echo \"$GLIBC_PREPARED\" | sed 's/\//\\\//g')
+if [ $BUILD_GLIBC = true ] ; then
+  echo "Build busybox from my glibc..."
+  # This variable holds the full path to the glibc installation area as quoted string.
+  # All back slashes are escaped (/ => \/) in order to keep the 'sed' command stable.
+  GLIBC_PREPARED_ESCAPED=$(echo \"$GLIBC_PREPARED\" | sed 's/\//\\\//g')
 
-# Now we tell BusyBox to use the glibc prepared area.
-#sed -i "s/.*CONFIG_SYSROOT.*/CONFIG_SYSROOT=$GLIBC_PREPARED_ESCAPED/" .config
+  # Now we tell BusyBox to use the glibc prepared area.
+  sed -i "s/.*CONFIG_SYSROOT.*/CONFIG_SYSROOT=$GLIBC_PREPARED_ESCAPED/" .config
+else
+  sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/"  .config
+fi
 
+if [  $SYSTEM_64 = false ] ; then
+  echo "Build 32bit busybox..."
+  sed -i "s/.*CONFIG_EXTRA_CFLAGS.*/CONFIG_EXTRA_CFLAGS=\"-m32\"/" .config
+  sed -i "s/.*CONFIG_EXTRA_LDFLAGS.*/CONFIG_EXTRA_LDFLAGS=\"-m32\"/" .config
+fi
 # Read the 'CFLAGS' property from '.config'
 CFLAGS="$(grep -i ^CFLAGS .config | cut -f2 -d'=')"
 

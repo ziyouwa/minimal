@@ -40,10 +40,11 @@ mount -t devpts none /dev/pts
 
 # Start Udev to populate /dev and handle hotplug events
 echo -n "${BLUE}Starting udev daemon for hotplug support...${NORMAL}"
-#/sbin/udevd --daemon 2>/dev/null >/dev/null
-/sbin/udevd --daemon 2>&1 >/dev/null
-#/sbin/udevadm trigger --action=add 2>/dev/null >/dev/null &
+/sbin/udevd --daemon --resolve-names=never 2>&1 >/dev/null
 /sbin/udevadm trigger --action=add 2>&1 >/dev/null &
+
+# This waits until all devices have registered
+/sbin/udevadm settle --timeout=8
 
 echo "Mounted all core filesystems. Ready to continue."
 
