@@ -21,8 +21,8 @@ time sh 02_build_kernel.sh
 if [ $BUILD_GLIBC = true ] ; then
 	time sh 04_build_glibc.sh
 	time sh 05_prepare_glibc.sh
+	time sh 09_build_udev.sh
 fi
-time sh 09_build_udev.sh
 time sh 07_build_busybox.sh || exit 1
 
 wait

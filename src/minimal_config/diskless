@@ -1,3 +1,5 @@
+SYSTEM_64=false
+
 KERNEL_SOURCE_URL=http://mirrors.aliyun.com/linux-kernel/v4.x/linux-4.4.48.tar.xz
 
 GLIBC_SOURCE_URL=http://mirrors.ustc.edu.cn/gnu/glibc/glibc-2.25.tar.xz
