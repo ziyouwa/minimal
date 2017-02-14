@@ -15,6 +15,7 @@ BUSYBOX_INSTALLED=$(pwd)/work/busybox/busybox_installed
 
 # Remember the Udev install folder.
 UDEV_INSTALLED=$(pwd)/work/udev/udev_installed
+#EUDEV_INSTALLED=$(pwd)/work/eudev/eudev_installed
 
 KERNEL_INSTALLED=$(pwd)/work/kernel/kernel_installed
 KERNEL_VERSION=$(ls -d work/kernel/linux* |cut -d- -f2)
@@ -44,7 +45,7 @@ else
   echo "Source files and folders have been skipped."
 fi
 
-if [ $BUILD_GLIBC = true ] ; then
+if [ "$BUILD_GLIBC" = "true" ] ; then
   # This is for the dynamic loader. Note that the name and the location are both
   # specific for 32-bit and 64-bit machines. First we check the BusyBox executable
   # and then we copy the dynamic loader to its appropriate location.
@@ -74,15 +75,15 @@ cp -r $UDEV_INSTALLED/*  .
   # Copy all necessary 'glibc' libraries to '/lib' END.
 fi 
 
+echo "Install linux kernel modules."
+cp -r $KERNEL_INSTALLED/lib .
+
 strip -g \
   $SRC_DIR/work/rootfs/bin/* \
   $SRC_DIR/work/rootfs/sbin/* \
   $SRC_DIR/work/rootfs/lib/* \
   2>/dev/null
 echo "Reduced the size of libraries and executables."
-
-echo "Install linux kernel modules."
-cp -r $KERNEL_INSTALLED/lib .
 
 echo "The initramfs area has been generated."
 

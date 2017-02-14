@@ -1,19 +1,11 @@
 #!/bin/sh
 
-set -xe 
-
 echo "*** BUILD UDEV BEGIN ***"
 
 SRC_DIR=$(pwd)
 
 # Grab everything .
 source $SRC_DIR/.config
-
-# Find the number of available CPU cores.
-NUM_CORES=$(grep ^processor /proc/cpuinfo | wc -l)
-
-# Calculate the number of 'make' jobs to be used later.
-NUM_JOBS=$((NUM_CORES * JOB_FACTOR))
 
 # Remember the glibc installation area.src/udev/udev-builtin-keyboard.c 
 GLIBC_PREPARED=$(pwd)/work/glibc/glibc_prepared

@@ -1,3 +1,5 @@
+#set -xe
+
 SYSTEM_64=false
 
 KERNEL_SOURCE_URL=http://mirrors.aliyun.com/linux-kernel/v4.x/linux-4.4.48.tar.xz
@@ -6,6 +8,12 @@ GLIBC_SOURCE_URL=http://mirrors.ustc.edu.cn/gnu/glibc/glibc-2.25.tar.xz
 
 #udev
 UDEV_SOURCE_URL=http://mirrors.ustc.edu.cn/kernel.org/linux/utils/kernel/hotplug//udev-175.tar.xz
+
+#Homepage: https://wiki.gentoo.org/wiki/Project:Eudev
+#
+#Tarballs of releases: http://dev.gentoo.org/~blueness/eudev/
+#
+EUDEV_SOURCE_URL=http://dev.gentoo.org/~blueness/eudev/eudev-3.2.1.tar.gz
 
 #custom config
 USE_PREDEFINED_KERNEL_CONFIG=true

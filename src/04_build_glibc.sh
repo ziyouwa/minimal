@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -xe
-
 echo "*** BUILD GLIBC BEGIN ***"
 
 SRC_DIR=$(pwd)

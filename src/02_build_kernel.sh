@@ -32,7 +32,7 @@ if [ "$USE_PREDEFINED_KERNEL_CONFIG" = "true" ] ; then
     CFLAGS="$CFLAGS" \
     allnoconfig -j $NUM_JOBS
   cp $SRC_DIR/minimal_config/kernel.config ../tmpdefconfig
-  if [  $SYSTEM_64 = false ] ; then
+  if [ "$SYSTEM_64" = "false" ] ; then
     cat $SRC_DIR/minimal_config/64_to_32_defconfig >> ../tmpdefconfig
   fi
   scripts/kconfig/merge_config.sh $(pwd)/../tmpdefconfig

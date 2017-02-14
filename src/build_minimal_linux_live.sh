@@ -11,6 +11,7 @@ time sh 01_get_kernel.sh &
 time sh 03_get_glibc.sh &
 time sh 06_get_busybox.sh &
 time sh 08_get_udev.sh &
+#time sh 08_get_eudev.sh &
 time sh 13_get_syslinux.sh &
 
 # Waiting download complete.
@@ -18,10 +19,11 @@ wait
 
 time sh 02_build_kernel.sh
 
-if [ $BUILD_GLIBC = true ] ; then
+if [ "$BUILD_GLIBC" = "true" ] ; then
 	time sh 04_build_glibc.sh
 	time sh 05_prepare_glibc.sh
 	time sh 09_build_udev.sh
+	#time sh 09_build_eudev.sh
 fi
 time sh 07_build_busybox.sh || exit 1
 

@@ -39,7 +39,7 @@ mkdir -p /dev/pts
 mount -t devpts none /dev/pts
 
 # Start Udev to populate /dev and handle hotplug events
-echo -n "${BLUE}Starting udev daemon for hotplug support...${NORMAL}"
+echo -n "Starting udev daemon for hotplug support..."
 /sbin/udevd --daemon --resolve-names=never 2>&1 >/dev/null
 /sbin/udevadm trigger --action=add 2>&1 >/dev/null &
 

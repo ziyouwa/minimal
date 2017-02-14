@@ -42,7 +42,7 @@ else
   sed -i "s/.*CONFIG_INETD.*/CONFIG_INETD=n/" .config
 fi
 
-if [ $BUILD_GLIBC = true ] ; then
+if [ "$BUILD_GLIBC" = "true" ] ; then
   echo "Build busybox from my glibc..."
   # This variable holds the full path to the glibc installation area as quoted string.
   # All back slashes are escaped (/ => \/) in order to keep the 'sed' command stable.
@@ -54,13 +54,11 @@ else
   sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/"  .config
 fi
 
-if [  $SYSTEM_64 = false ] ; then
+if [ "$SYSTEM_64" = "false" ] ; then
   echo "Build 32bit busybox..."
   sed -i "s/.*CONFIG_EXTRA_CFLAGS.*/CONFIG_EXTRA_CFLAGS=\"-m32\"/" .config
   sed -i "s/.*CONFIG_EXTRA_LDFLAGS.*/CONFIG_EXTRA_LDFLAGS=\"-m32\"/" .config
 fi
-# Read the 'CFLAGS' property from '.config'
-CFLAGS="$(grep -i ^CFLAGS .config | cut -f2 -d'=')"
 
 # Compile busybox with optimization for "parallel jobs" = "number of processors".
 echo "Building BusyBox..."
