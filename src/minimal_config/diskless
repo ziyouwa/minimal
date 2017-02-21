@@ -9,6 +9,9 @@ GLIBC_SOURCE_URL=http://mirrors.ustc.edu.cn/gnu/glibc/glibc-2.25.tar.xz
 #udev
 UDEV_SOURCE_URL=http://mirrors.ustc.edu.cn/kernel.org/linux/utils/kernel/hotplug//udev-175.tar.xz
 
+#syslinux
+SYSLINUX_SOURCE_URL=http://mirrors.ustc.edu.cn/kernel.org/linux/utils/boot/syslinux/syslinux-6.03.tar.xz
+
 #Homepage: https://wiki.gentoo.org/wiki/Project:Eudev
 #
 #Tarballs of releases: http://dev.gentoo.org/~blueness/eudev/
