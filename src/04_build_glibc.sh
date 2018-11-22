@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set +xe 
+
 echo "*** BUILD GLIBC BEGIN ***"
 
 SRC_DIR=$(pwd)
@@ -8,13 +10,13 @@ SRC_DIR=$(pwd)
 source $SRC_DIR/.config
 
 # Save the kernel installation directory.
-KERNEL_INSTALLED=$SRC_DIR/work/kernel/kernel_installed
 
 cd work/glibc
 
 # Find the glibc source directory, e.g. 'glibc-2.23' and remember it.
-cd $(ls -d glibc-*)
+cd $( ls -d glibc-2* )
 GLIBC_SRC=$(pwd)
+#echo "GLIBC_SRC is $GLIBC_SRC"
 cd ..
 
 # Prepare the work area, e.g. 'work/glibc/glibc_objects'.
@@ -40,21 +42,26 @@ cd glibc_objects
 echo "Configuring glibc...$GLIBC_OPTS"
 $GLIBC_SRC/configure \
   --prefix= \
-  --with-headers=$KERNEL_INSTALLED/include \
+  --with-headers=$SYSROOT/include \
+  --disable-timezone-tools \
   --without-gd \
   --without-selinux \
   --disable-werror \
   CFLAGS="$CFLAGS" $GLIBC_OPTS \
-  CC="gcc $COMPILE_OPTS" CXX="g++ $COMPILE_OPTS"
+  CC="gcc $COMPILE_OPTS" CXX="g++ $COMPILE_OPTS" || exit 1
 
 # Compile glibc with optimization for "parallel jobs" = "number of processors".
 echo "Building glibc..."
-make -j $NUM_JOBS
+make -j $NUM_JOBS || exit 1
 
 # Install glibc in the installation area, e.g. 'work/glibc/glibc_installed'.
 echo "Installing glibc..."
 make install \
   DESTDIR=$GLIBC_INSTALLED \
+  -j $NUM_JOBS
+  
+make install \
+  DESTDIR=$SYSROOT \
   -j $NUM_JOBS
 
 cd $SRC_DIR

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#set -xe
+
 echo "*** GENERATE ROOTFS BEGIN ***"
 
 SRC_DIR=$(pwd)
@@ -18,7 +20,6 @@ UDEV_INSTALLED=$(pwd)/work/udev/udev_installed
 #EUDEV_INSTALLED=$(pwd)/work/eudev/eudev_installed
 
 KERNEL_INSTALLED=$(pwd)/work/kernel/kernel_installed
-KERNEL_VERSION=$(ls -d work/kernel/linux* |cut -d- -f2)
 
 cd work
 
@@ -26,10 +27,10 @@ echo "Preparing initramfs work area..."
 rm -rf rootfs
 
 # Copy all BusyBox generated stuff to the location of our 'initramfs' folder.
-cp -r $BUSYBOX_INSTALLED rootfs
+cp -r $BUSYBOX_INSTALLED rootfs || exit 1
 
 # Copy all rootfs resources to the location of our 'initramfs' folder.
-cp -r src/minimal_rootfs/* rootfs
+cp -r $SRC_DIR/minimal_rootfs/* rootfs
 
 cd rootfs
 
@@ -52,22 +53,22 @@ if [ "$BUILD_GLIBC" = "true" ] ; then
   BUSYBOX_ARCH=$(file bin/busybox | cut -d' '  -f3)
   if [ "$BUSYBOX_ARCH" = "64-bit" ] ; then
     mkdir lib64
-    cp $GLIBC_PREPARED/lib/ld-linux* lib64
+    cp $SYSROOT/lib/ld-linux* lib64
     echo "Dynamic loader is accessed via '/lib64'."
   else
-    cp $GLIBC_PREPARED/lib/ld-linux* lib
+    cp $SYSROOT/lib/ld-linux* lib
     echo "Dynamic loader is accessed via '/lib'."
   fi
 
   # Copy all necessary 'glibc' libraries to '/lib' BEGIN.
 
   # BusyBox has direct dependencies on these libraries.
-  cp $GLIBC_PREPARED/lib/libm.so.6 lib
-  cp $GLIBC_PREPARED/lib/libc.so.6 lib
+  cp $SYSROOT/lib/libm.so.6 lib
+  cp $SYSROOT/lib/libc.so.6 lib
 
   # These libraries are necessary for the DNS resolving.
-  cp $GLIBC_PREPARED/lib/libresolv.so.2 lib
-  cp $GLIBC_PREPARED/lib/libnss_dns.so.2 lib
+  # cp $SYSROOT/lib/libresolv.so.2 lib
+  # cp $SYSROOT/lib/libnss_dns.so.2 lib
 
 # Copy all Udev files to rootfs
 cp -r $UDEV_INSTALLED/*  .
@@ -84,6 +85,8 @@ strip -g \
   $SRC_DIR/work/rootfs/lib/* \
   2>/dev/null
 echo "Reduced the size of libraries and executables."
+
+#cp -f $SRC_DIR/minimal_config/busybox-i486-1.28.1 bin/busybox
 
 echo "The initramfs area has been generated."
 

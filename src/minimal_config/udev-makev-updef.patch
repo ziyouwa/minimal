@@ -1,0 +1,11 @@
+diff -urN udev-175/libudev/libudev.h b/libudev/libudev.h
+--- udev-175/libudev/libudev.h	2018-11-12 15:41:46.639605891 +0800
++++ b/libudev/libudev.h	2018-11-12 15:41:32.136272079 +0800
+@@ -15,6 +15,7 @@
+ #include <stdarg.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
++#include <sys/sysmacros.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {

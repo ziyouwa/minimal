@@ -36,6 +36,16 @@ mkdir ../work/glibc
 # Full path will be something like 'work/glibc/glibc-2.23'.
 tar -xf $ARCHIVE_FILE -C ../work/glibc
 
+cd ../work/glibc
+cd $( ls -d glibc-* )
+
+for F in $(ls  $SRC_DIR/minimal_config/glibc*.patch)
+	do
+		patch -l -p1 <$F
+	done
+cd ..
+
+
 cd $SRC_DIR
 
 echo "*** GET GLIBC END ***"

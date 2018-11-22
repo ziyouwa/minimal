@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set +xe 
+
 echo "*** BUILD UDEV BEGIN ***"
 
 SRC_DIR=$(pwd)
@@ -8,7 +10,6 @@ SRC_DIR=$(pwd)
 source $SRC_DIR/.config
 
 # Remember the glibc installation area.src/udev/udev-builtin-keyboard.c 
-GLIBC_PREPARED=$(pwd)/work/glibc/glibc_prepared
 
 UDEV_PREPARED="$(pwd)/work/udev/udev_installed"
 
@@ -20,11 +21,20 @@ cd work/udev
 # Change to the source directory ls finds, e.g. 'udev-1.24.2'.
 cd $(ls -d udev-*)
 
+for F in $(ls  $SRC_DIR/minimal_config/udev*.patch)
+	do
+		patch -l -p1 <$F
+	done
+
+echo "current is $(pwd)"
 # Config
-LIBRARY_PATH=$GLIBC_PREPARED/lib  ./configure \
+CC="gcc $COMPILE_OPTS" CXX="g++ $COMPILE_OPTS" ./configure \
+	--with-sysdir=$SYS_ROOT \
 	--prefix=/ \
 	--exec-prefix=/ \
 	--libexecdir=/lib/udev \
+	--disable-largefile \
+    --disable-logging \
 	--disable-gtk-doc-html \
 	--disable-manpages \
 	--disable-hwdb \
@@ -32,23 +42,24 @@ LIBRARY_PATH=$GLIBC_PREPARED/lib  ./configure \
 	--disable-introspection \
 	--disable-mtd_probe \
 	--disable-keymap \
+	--disable-logging \
 	--disable-kmod \
 	--disable-blkid \
-	--disable-logging \
-	CC="gcc $COMPILE_OPTS" CXX="g++ $COMPILE_OPTS"
+	--with-gnu-ld \
+	--disable-static
 
 # Remove previously generated artifacts.
-LIBRARY_PATH=$GLIBC_PREPARED/lib make clean
+CC="gcc $COMPILE_OPTS" CXX="g++ $COMPILE_OPTS"  make clean
 	
 # Compile udev with optimization for "parallel jobs" = "number of processors".
 echo "Building Udev..."
-LIBRARY_PATH=$GLIBC_PREPARED/lib make \
+CC="gcc $COMPILE_OPTS" CXX="g++ $COMPILE_OPTS"  make \
   EXTRA_CFLAGS="$CFLAGS" \
    -j $NUM_JOBS
 
 # Create the symlinks for udev. The file 'udev.links' is used for this.
 echo "Preparing install files..."
-LIBRARY_PATH=$GLIBC_PREPARED/lib make  install  DESTDIR=$UDEV_PREPARED
+CC="gcc $COMPILE_OPTS" CXX="g++ $COMPILE_OPTS"  make  install  DESTDIR=$UDEV_PREPARED
 cp udev/udevd $UDEV_PREPARED/sbin/
 
 # Delete unused file and directory

@@ -28,14 +28,15 @@ fi
 if [ "$USE_PREDEFINED_KERNEL_CONFIG" = "true" ] ; then
   # Use predefined configuration file for the kernel.
   echo "Using config file $SRC_DIR/minimal_config/kernel.config"  
-  $KERNEL_MAKE \
-    CFLAGS="$CFLAGS" \
-    allnoconfig -j $NUM_JOBS
   cp $SRC_DIR/minimal_config/kernel.config ../tmpdefconfig
   if [ "$SYSTEM_64" = "false" ] ; then
     cat $SRC_DIR/minimal_config/64_to_32_defconfig >> ../tmpdefconfig
   fi
+  #mv ../tmpdefconfig .config
   scripts/kconfig/merge_config.sh $(pwd)/../tmpdefconfig
+#  $KERNEL_MAKE \
+#    CFLAGS="$CFLAGS" \
+#    oldconfig -j $NUM_JOBS
 else
   # Create default configuration file for the kernel.
   $KERNEL_MAKE defconfig -j $NUM_JOBS
@@ -89,7 +90,7 @@ sed -i "s/^CONFIG_DEBUG_KERNEL.*/\\# CONFIG_DEBUG_KERNEL is not set/" .config
 # GNU C library (glibc).
 echo "Generating kernel headers..."
 $KERNEL_MAKE \
-  INSTALL_HDR_PATH=$SRC_DIR/work/kernel/kernel_installed \
+  INSTALL_HDR_PATH=$SYSROOT \
   headers_install -j $NUM_JOBS
  
 echo "Building kernel..."
@@ -106,6 +107,9 @@ $KERNEL_MAKE \
   INSTALL_MOD_PATH=$SRC_DIR/work/kernel/kernel_installed  \
   modules_install -j $NUM_JOBS
 
+$KERNEL_MAKE \
+  INSTALL_MOD_PATH=$SYSROOT  \
+  modules_install -j $NUM_JOBS
 rm -f ../tmpdefconfig
 
 cd $SRC_DIR

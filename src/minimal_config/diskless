@@ -2,7 +2,9 @@
 
 SYSTEM_64=false
 
-KERNEL_SOURCE_URL=http://mirrors.aliyun.com/linux-kernel/v4.x/linux-4.4.48.tar.xz
+#DEBUG=true
+
+KERNEL_SOURCE_URL=http://mirrors.aliyun.com/linux-kernel/v4.x/linux-4.4.38.tar.xz
 
 GLIBC_SOURCE_URL=http://mirrors.ustc.edu.cn/gnu/glibc/glibc-2.25.tar.xz
 
@@ -26,7 +28,11 @@ COPY_SOURCE_ROOTFS=false
 COPY_SOURCE_ISO=false
 USE_BOOT_LOGO=false
 
-JOB_FACTOR=2
+JOB_FACTOR=8
+SRC_DIR=$(pwd)
+SYSROOT=$SRC_DIR/work/sysroot
+KERNEL_INSTALLED=$SRC_DIR/work/kernel/kernel_installed
+GLIBC_INSTALLED=$SRC_DIR/work/glibc/glibc_installed
 
 INITRD_COMPRESS_CMD='xz -9 --check=none'
 

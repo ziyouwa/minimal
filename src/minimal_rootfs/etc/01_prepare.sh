@@ -6,33 +6,16 @@
 #  |
 #  +--(1) /etc/01_prepare.sh (this file)
 #  |
-#  +--(2) /etc/02_overlay.sh
-#          |
-#          +-- /etc/03_init.sh
-#               |
-#               +-- /sbin/init
-#                    |
-#                    +--(1) /etc/04_bootscript.sh
-#                    |       |
-#                    |       +-- udhcpc
-#                    |           |
-#                    |           +-- /etc/05_rc.udhcp
-#                    |
-#                    +--(2) /bin/sh (Alt + F1, main console)
-#                    |
-#                    +--(2) /bin/sh (Alt + F2)
-#                    |
-#                    +--(2) /bin/sh (Alt + F3)
-#                    |
-#                    +--(2) /bin/sh (Alt + F4)
+#  +--(2) /etc/02_ql.sh
 
-dmesg -n 1
-echo "Most kernel messages have been suppressed."
+#dmesg -n 1
+#echo "Most kernel messages have been suppressed."
 
 mount -t devtmpfs none /dev
 mount -t proc none /proc
-mount -t tmpfs none /tmp -o mode=1777
 mount -t sysfs none /sys
+mount -t tmpfs none /tmp -o mode=1777
+mount -t tmpfs none /run
 
 mkdir -p /dev/pts
 
@@ -44,7 +27,12 @@ echo -n "Starting udev daemon for hotplug support..."
 /sbin/udevadm trigger --action=add 2>&1 >/dev/null &
 
 # This waits until all devices have registered
-/sbin/udevadm settle --timeout=8
+/sbin/udevadm settle --timeout=88 &
+# wait all devices have registered
+wait
+
+#init network
+/etc/04_bootscript.sh
 
 echo "Mounted all core filesystems. Ready to continue."
 

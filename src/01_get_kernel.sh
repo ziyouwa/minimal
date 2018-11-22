@@ -36,6 +36,15 @@ mkdir ../work/kernel
 # Full path will be something like 'work/kernel/linux-4.4.6'.
 tar -xf $ARCHIVE_FILE -C ../work/kernel
 
+# patching sources
+cd ../work/kernel
+cd $(ls -d linux-*)
+for P in `ls $SRC_DIR/minimal_config/kernel_patch 2>/dev/null`
+do
+	echo "patching $P"
+	patch -p1 <$SRC_DIR/minimal_config/kernel_patch/$P
+done
+
 cd $SRC_DIR
 
 echo "*** GET KERNEL END ***"

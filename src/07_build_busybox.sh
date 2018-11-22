@@ -8,7 +8,6 @@ SRC_DIR=$(pwd)
 source $SRC_DIR/.config
 
 # Remember the glibc installation area.
-GLIBC_PREPARED=$(pwd)/work/glibc/glibc_prepared
 
 cd work/busybox
 
@@ -42,14 +41,14 @@ else
   sed -i "s/.*CONFIG_INETD.*/CONFIG_INETD=n/" .config
 fi
 
-if [ "$BUILD_GLIBC" = "true" ] ; then
+if [ ! "$BUILD_GLIBC" == "true" ] ; then
   echo "Build busybox from my glibc..."
   # This variable holds the full path to the glibc installation area as quoted string.
   # All back slashes are escaped (/ => \/) in order to keep the 'sed' command stable.
-  GLIBC_PREPARED_ESCAPED=$(echo \"$GLIBC_PREPARED\" | sed 's/\//\\\//g')
+  SYSROOT_ESCAPED=$(echo \"$SYSROOT\" | sed 's/\//\\\//g')
 
   # Now we tell BusyBox to use the glibc prepared area.
-  sed -i "s/.*CONFIG_SYSROOT.*/CONFIG_SYSROOT=$GLIBC_PREPARED_ESCAPED/" .config
+  sed -i "s/.*CONFIG_SYSROOT.*/CONFIG_SYSROOT=$SYSROOT_ESCAPED/" .config
 else
   sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/"  .config
 fi
