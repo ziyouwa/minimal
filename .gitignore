@@ -9,20 +9,12 @@
 /src/minimal_linux_live*
 /src/*.img
 /src/rootfs*
+src/ipxe/**
 /src/15_scpto140.sh
 src/16_scpto3.sh
-src/20181113OK/
-src/minimal_config/busybox-i486-1.28.1
-src/minimal_config/busybox_1.26.2
-src/minimal_config/kernel_before_20170417.config
-src/minimal_config/kernel_cofig_1112
-src/minimal_config/kernel_patch/
-src/minimal_config/ql_defconfig_20181109
-src/minimal_config/ql_defconfig_tmp
-src/minimal_config/test_kernel
-src/minimal_config/test_kernel2
-src/minimal_config/udevadm
-src/minimal_config/udevd
+src/build_minimal_qllinux.sh
+src/20*OK
+src/minimal_config/**
 
 /docs/mdbook
 /docs/book/**

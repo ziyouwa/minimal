@@ -73,27 +73,42 @@ for i in `cat /proc/cmdline`; do
 	esac
 done
 
-[ x"$QLTYPE" == "xdebug" ] && exec setsid cttyhack sh
+[ "x$QLTYPE" == "xdebug" ] && exec setsid cttyhack sh
 
-if [ -n "$NFS" ] ; then
-	NFSROOT=$(echo $NFS|cut -d, -f 1)
-	#NFSDIR=$(echo $NFS|cut -d: -f 2 |cut -d, -f 1 )
-	NFSOPTS=$(echo $NFS|cut -d, -f 2-)
-	#echo $NFS| grep -q nfsvers=4 && modprobe nfsv4 || modprobe nfsv3
+if [ -n "$nfsroot" ] ; then
+	NFSROOT=$(echo $nfsroot|cut -d, -f 1)
+	NFSOPTS=$(echo $nfsroot|cut -d, -f 2-)
+	# for mount debug dir...
+	echo $nfsroot| grep -q nfsvers=3 && NFSVER='nfsvers=3' || NFSVER='nfsvers=4'
 	
-	#echo "NFS is $NFS,NFSROOT is $NFSROOT, NFSOPTS is $NFSOPTS"
-	#exec setsid cttyhack sh
+	#echo "NFS is $nfsroot,NFSROOT is $NFSROOT, NFSOPTS is $NFSOPTS"
 	mount -t nfs -o $NFSOPTS $NFSROOT /mnt || {
-		echo "mount nfs failure..."
+		echo "mount $NFSROOT failure..."
 		read -n1 -s 
 		reboot
 	}
 	
-	if [ x"$QLTYPE" == "xlog" ] ; then 
-		LOGROOT=$(echo $NFS|cut -d, -f 1)
-		LOGROOT=${LOGROOT%/*}/debug
-		mount -t nfs -o nfsvers=4,rw,soft $LOGROOT /mnt/lonld/debug
+	if [ "x$QLTYPE" == "xlog" ] ; then 
+		LOGROOT=${NFSROOT%/*}/debug
+		mount -t nfs -o $NFSVER $LOGROOT /mnt/lonld/debug || {
+		echo "mount $LOGROOT failure..."
+		read -n1 -s 
+		reboot
+		}
 		echo "mount log dir...OK"
+		if [ -f /tmp/.interface ]; then
+			cd /mnt/lonld/debug
+			source /tmp/.interface
+			rm -f qlcommlib_debug_${macaddr}.txt
+			rm -f wtdll_debug_${macaddr}.txt
+			touch qlcommlib_debug_${macaddr}.txt
+			touch wtdll_debug_${macaddr}.txt
+			echo '1' > /proc/sys/kernel/core_uses_pid 2>/dev/null
+			echo "/lonld/debug/core-%e-%p-%t" > /proc/sys/kernel/core_pattern 2>/dev/null
+			cd - >/dev/null
+		else
+			echo "no netdev information, debug init fail.."
+		fi
 	fi
 else
 	echo "(/etc/02_ql.sh) - no nfs defined..."
@@ -103,8 +118,7 @@ else
 fi
 echo "mount nfs ......OK"
 
-
-echo $QLCMD >/tmp/.qlcmd
+echo "$QLCMD" > /tmp/.qlcmd
 
 exit
 

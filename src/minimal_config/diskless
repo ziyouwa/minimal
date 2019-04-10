@@ -2,23 +2,27 @@
 
 SYSTEM_64=false
 
-#DEBUG=true
+DEBUG=true
 
-KERNEL_SOURCE_URL=http://mirrors.aliyun.com/linux-kernel/v4.x/linux-4.4.38.tar.xz
+#KERNEL_SOURCE_URL=https://mirrors.163.com/kernel/v3.x/linux-3.18.138.tar.xz
+KERNEL_SOURCE_URL=https://mirrors.163.com/kernel/v4.x/linux-4.4.178.tar.xz
 
-GLIBC_SOURCE_URL=http://mirrors.ustc.edu.cn/gnu/glibc/glibc-2.25.tar.xz
+GLIBC_SOURCE_URL=https://mirrors.ustc.edu.cn/gnu/glibc/glibc-2.25.tar.xz
 
 #udev
-UDEV_SOURCE_URL=http://mirrors.ustc.edu.cn/kernel.org/linux/utils/kernel/hotplug//udev-175.tar.xz
+UDEV_SOURCE_URL=https://mirrors.ustc.edu.cn/kernel.org/linux/utils/kernel/hotplug//udev-175.tar.xz
 
 #syslinux
-SYSLINUX_SOURCE_URL=http://mirrors.ustc.edu.cn/kernel.org/linux/utils/boot/syslinux/syslinux-6.03.tar.xz
+SYSLINUX_SOURCE_URL=https://mirrors.ustc.edu.cn/kernel.org/linux/utils/boot/syslinux/syslinux-6.03.tar.xz
 
 #Homepage: https://wiki.gentoo.org/wiki/Project:Eudev
 #
 #Tarballs of releases: http://dev.gentoo.org/~blueness/eudev/
 #
-EUDEV_SOURCE_URL=http://dev.gentoo.org/~blueness/eudev/eudev-3.2.1.tar.gz
+#EUDEV_SOURCE_URL=http://dev.gentoo.org/~blueness/eudev/eudev-3.2.1.tar.gz
+
+
+BUSYBOX_SOURCE_URL=https://busybox.net/downloads/busybox-1.29.3.tar.bz2
 
 #custom config
 USE_PREDEFINED_KERNEL_CONFIG=true
@@ -33,6 +37,11 @@ SRC_DIR=$(pwd)
 SYSROOT=$SRC_DIR/work/sysroot
 KERNEL_INSTALLED=$SRC_DIR/work/kernel/kernel_installed
 GLIBC_INSTALLED=$SRC_DIR/work/glibc/glibc_installed
+
+BUILD_GLIBC=false
+
+MUSL_ENABLE=false
+UDEV_ENABLE=false
 
 INITRD_COMPRESS_CMD='xz -9 --check=none'
 

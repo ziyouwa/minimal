@@ -19,12 +19,8 @@ cd work/udev
 [ -d $UDEV_PREPARED ] && rm -rf $UDEV_PREPARED
 
 # Change to the source directory ls finds, e.g. 'udev-1.24.2'.
-cd $(ls -d udev-*)
 
-for F in $(ls  $SRC_DIR/minimal_config/udev*.patch)
-	do
-		patch -l -p1 <$F
-	done
+cd $(ls -d udev-1*)
 
 echo "current is $(pwd)"
 # Config

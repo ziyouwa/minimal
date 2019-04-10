@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 echo "*** GET KERNEL BEGIN ***"
+
+set -xe
 
 SRC_DIR=$(pwd)
 
@@ -22,7 +24,7 @@ if [ ! "$USE_LOCAL_SOURCE" = "true" ] ; then
   rm -f ${ARCHIVE_FILE}
   # Downloading kernel source bundle file. 
   echo "Downloading kernel source bundle from $DOWNLOAD_URL"
-  curl -L $KERNEL_SOURCE_URL -o ${ARCHIVE_FILE}.down && mv ${ARCHIVE_FILE}{.down,} 
+  curl -L $KERNEL_SOURCE_URL -o ${ARCHIVE_FILE}.down && mv ${ARCHIVE_FILE}.down ${ARCHIVE_FILE} 
 else
   echo "Using local kernel source bundle $SRC_DIR/source/$ARCHIVE_FILE"
 fi

@@ -36,6 +36,15 @@ mkdir ../work/udev
 # Full path will be something like 'work/udev/udev-175'.
 tar -xf $ARCHIVE_FILE -C ../work/udev
 
+cd ../work/udev
+cd $(ls -d udev-1*)
+
+for F in $(ls  $SRC_DIR/minimal_config/udev*.patch)
+	do
+		patch -l -p1 <$F
+	done
+	
+
 cd $SRC_DIR
 
 echo "*** GET UDEV END ***"

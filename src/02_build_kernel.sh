@@ -2,6 +2,8 @@
 
 echo "*** BUILD KERNEL BEGIN ***"
 
+set -xe
+
 SRC_DIR=$(pwd)
 
 #Grab everything from config file

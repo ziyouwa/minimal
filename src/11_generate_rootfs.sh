@@ -1,10 +1,11 @@
 #!/bin/sh
 
-#set -xe
+# set -xe
 
 echo "*** GENERATE ROOTFS BEGIN ***"
 
 SRC_DIR=$(pwd)
+LIBDIR=lib
 
 #Grab everything from config file
 source $SRC_DIR/.config
@@ -46,38 +47,59 @@ else
   echo "Source files and folders have been skipped."
 fi
 
+BUSYBOX_ARCH=$(file bin/busybox | cut -d' '  -f3)
+if [ "$BUSYBOX_ARCH" = "64-bit" ] ; then
+	[ -e "lib" ] || ln -sf lib64 lib
+	FLAG64="true"
+fi
+
+mkdir -p $LIBDIR
+  
 if [ "$BUILD_GLIBC" = "true" ] ; then
   # This is for the dynamic loader. Note that the name and the location are both
   # specific for 32-bit and 64-bit machines. First we check the BusyBox executable
   # and then we copy the dynamic loader to its appropriate location.
-  BUSYBOX_ARCH=$(file bin/busybox | cut -d' '  -f3)
-  if [ "$BUSYBOX_ARCH" = "64-bit" ] ; then
-    mkdir lib64
-    cp $SYSROOT/lib/ld-linux* lib64
-    echo "Dynamic loader is accessed via '/lib64'."
-  else
-    cp $SYSROOT/lib/ld-linux* lib
-    echo "Dynamic loader is accessed via '/lib'."
-  fi
 
+
+    cp $SYSROOT/lib/ld-linux* $LIBDIR    
+    echo "Dynamic loader is accessed via $LIBDIR."
+    
   # Copy all necessary 'glibc' libraries to '/lib' BEGIN.
 
   # BusyBox has direct dependencies on these libraries.
-  cp $SYSROOT/lib/libm.so.6 lib
-  cp $SYSROOT/lib/libc.so.6 lib
+  cp $SYSROOT/lib/libm.so.6 $LIBDIR
+  cp $SYSROOT/lib/libc.so.6 $LIBDIR
 
   # These libraries are necessary for the DNS resolving.
-  # cp $SYSROOT/lib/libresolv.so.2 lib
-  # cp $SYSROOT/lib/libnss_dns.so.2 lib
-
-# Copy all Udev files to rootfs
-cp -r $UDEV_INSTALLED/*  .
+  # cp $SYSROOT/lib/libresolv.so.2 $LIBDIR
+  # cp $SYSROOT/lib/libnss_dns.so.2 $LIBDIR
 
   # Copy all necessary 'glibc' libraries to '/lib' END.
 fi 
 
+if [ "$MUSL_ENABLE" = "true" ] ; then
+	if [ "$FLAG64" = "true" ] ; then	
+		cp /lib/ld-musl-x86_64.so.1 $LIBDIR
+		cd $LIBDIR
+		ln -snf ld-musl-x86_64.so.1 libc.musl-x86_64.so.1
+	else
+		cp /lib/ld-musl-i386.so.1 $LIBDIR
+		cd $LIBDIR
+		ln -snf ld-musl-i386.so.1 libc.musl-x86.so.1
+	fi
+	cd - >/dev/null
+fi
+
+if [ "$UDEV_ENABLE" = "true" ] ; then
+  # Copy all Udev files to rootfs
+  cp -r $UDEV_INSTALLED/*  .
+fi
+
 echo "Install linux kernel modules."
+echo $(pwd)
 cp -r $KERNEL_INSTALLED/lib .
+
+find $ROOT_DIR -type f -name ".gitignore" -delete
 
 strip -g \
   $SRC_DIR/work/rootfs/bin/* \
@@ -93,4 +115,3 @@ echo "The initramfs area has been generated."
 cd $SRC_DIR
 
 echo "*** GENERATE ROOTFS END ***"
-

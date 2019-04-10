@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -xe
+
 echo "*** BUILD BUSYBOX BEGIN ***"
 
 SRC_DIR=$(pwd)
@@ -41,7 +43,7 @@ else
   sed -i "s/.*CONFIG_INETD.*/CONFIG_INETD=n/" .config
 fi
 
-if [ ! "$BUILD_GLIBC" == "true" ] ; then
+if [ "$BUILD_GLIBC" == "true" ] ; then
   echo "Build busybox from my glibc..."
   # This variable holds the full path to the glibc installation area as quoted string.
   # All back slashes are escaped (/ => \/) in order to keep the 'sed' command stable.
@@ -49,8 +51,8 @@ if [ ! "$BUILD_GLIBC" == "true" ] ; then
 
   # Now we tell BusyBox to use the glibc prepared area.
   sed -i "s/.*CONFIG_SYSROOT.*/CONFIG_SYSROOT=$SYSROOT_ESCAPED/" .config
-else
-  sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/"  .config
+#else
+  #sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/"  .config
 fi
 
 if [ "$SYSTEM_64" = "false" ] ; then
@@ -59,6 +61,10 @@ if [ "$SYSTEM_64" = "false" ] ; then
   sed -i "s/.*CONFIG_EXTRA_LDFLAGS.*/CONFIG_EXTRA_LDFLAGS=\"-m32\"/" .config
 fi
 
+if [ "$MUSL_ENABLE" = "false" ] ; then
+  # build static binary
+  sed -i "s/.*CONFIG_STATIC.*/CONFIG_STATIC=y/" .config
+fi
 # Compile busybox with optimization for "parallel jobs" = "number of processors".
 echo "Building BusyBox..."
 make \

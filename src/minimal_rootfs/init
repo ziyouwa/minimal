@@ -22,7 +22,8 @@ echo -e "Welcome to \\e[1mQianlong \\e[32mLinux \\e[31mdiskless system\\e[0m (/i
 # the script '/etc/03_init.sh' as the new init process.
 /etc/02_ql.sh
 
-QLCMD=$(cat /tmp/.qlcmd)
+[ -f "/tmp/.qlcmd" ] && QLCMD=$(cat /tmp/.qlcmd) || QLCMD="/init"
+# QLCMD=$(cat /tmp/.qlcmd)
 
 echo "Switch all mount..."
 # Move critical file systems to the new mountpoint.
@@ -32,9 +33,9 @@ mount --move /sys /mnt/sys
 #echo "Switch to new system...sys"
 mount --move /proc /mnt/proc
 #echo "Switch to new system...proc"
-mount --move /tmp /mnt/tmp
+#mount --move /tmp /mnt/tmp
 #echo "Switch to new system...tmp"
-mount --move /run /mnt/run
+#mount --move /run /mnt/run
 #echo "Switch to new system...run"
 #echo "Mount locations /dev, /sys, /tmp and /proc have been moved to /mnt."
 

@@ -19,5 +19,9 @@ if [ "$ip" ]; then
   echo "ip:     $ip"
   echo "mask:   $mask"
   echo "router: $router"
+  echo "netdev=$interface" > /tmp/.interface
+  echo "netip=$ip" >> /tmp/.interface
+  echo "macaddr=$(cat /sys/class/net/$interface/address|sed -e 's/://g')" >> /tmp/.interface
+  
 fi
 
